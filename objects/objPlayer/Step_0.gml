@@ -1,4 +1,19 @@
- var mov_x = keyboard_check(vk_right) - keyboard_check(vk_left);
+//COntrol de tiempo de invulnerabilidad
+if (tiempo_invulnerable > 0){
+    tiempo_invulnerable--;
+}
+
+//Controlamos el daño dibujando de rojo el player
+if (tiempo_rojo > 0){
+    tiempo_rojo--;
+    
+    if (tiempo_rojo <= 0){
+        image_blend = c_white;
+    }
+}
+
+
+var mov_x = keyboard_check(vk_right) - keyboard_check(vk_left);
  
  
  if(mov_x !=0)
@@ -45,4 +60,27 @@ if (!place_meeting(x, y + move_speed_v, objWall))
 else
 {
     move_speed_v = 0;
+}
+
+// Recibir daño solo al tocar un enemigo
+if (!global.game_over
+    && tiempo_invulnerable <= 0
+    && place_meeting(x, y, objEnemyParent))
+{
+    // Quitar una vida
+    global.vidas = max(0, global.vidas - 1);
+
+    // Protección durante 60 pasos
+    tiempo_invulnerable = 60;
+
+    // Mostrar al jugador de rojo durante 10 pasos
+    image_blend = c_red;
+    tiempo_rojo = 10;
+
+    // Comprobar game over
+    if (global.vidas <= 0)
+    {
+        global.game_over = true;
+		audio_play_sound(soundCoin, 1, false);
+    }
 }
